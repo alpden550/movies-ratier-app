@@ -40,6 +40,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    def __str__(self):
+        return self.name
+
 
 class Movie(models.Model):
     """Model to represent movie oblect."""

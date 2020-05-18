@@ -7,7 +7,8 @@ from api.models import User, Movie, Rating
 class CustomUserAdmin(UserAdmin):
     """Custom admin for custom user."""
     ordering = ('id',)
-    list_display = ('id', 'email', 'name', 'is_staff', 'is_superuser',)
+    list_display = ('id', 'email', 'name', 'is_active', 'is_staff', 'is_superuser')
+    list_display_links = ('id', 'email')
     search_fields = ('email', 'name')
     fieldsets = (
         (None, {
@@ -16,14 +17,14 @@ class CustomUserAdmin(UserAdmin):
         ('Personal Info', {'fields': ('name',)}),
         (
             'Permissions',
-            {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups',)}
+            {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups')}
         ),
         ('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'name', 'is_staff', 'groups',),
+            'fields': ('email', 'password1', 'password2', 'name', 'is_staff', 'groups'),
         }),
     )
 

@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -51,3 +53,33 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Rating(models.Model):
+    """Rating for a movie object."""
+
+    stars = models.PositiveIntegerField(
+        'Stars',
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    movie = models.ForeignKey(
+        'api.Movie',
+        verbose_name='Rating',
+        on_delete=models.CASCADE,
+        related_name='ratings',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='User',
+        on_delete=models.CASCADE,
+        related_name='ratings',
+    )
+
+    class Meta:
+        verbose_name = 'Rating'
+        verbose_name_plural = 'Ratings'
+        unique_together = ['movie', 'user']
+        index_together = ['movie', 'user']
+
+    def __str__(self):
+        return f'Rating {self.pk} for {self.movie}'

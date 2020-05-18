@@ -4,6 +4,7 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
+    """Custom user manager for custom user."""
 
     def create_user(self, email, password=None, **kwargs):
         """Create and save a new user."""
@@ -36,3 +37,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField('Is staff', default=False)
 
     objects = UserManager()
+
+
+class Movie(models.Model):
+    """Model to represent movie oblect."""
+
+    title = models.CharField('Movie Title', max_length=100, unique=True, db_index=True)
+    description = models.TextField('Movie Description', max_length=500, blank=True)
+
+    class Meta:
+        verbose_name = 'Movie'
+        verbose_name_plural = 'Movies'
+
+    def __str__(self):
+        return self.title

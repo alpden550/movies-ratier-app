@@ -49,6 +49,11 @@ class Movie(models.Model):
 
     title = models.CharField('Movie Title', max_length=100, unique=True, db_index=True)
     description = models.TextField('Movie Description', max_length=500, blank=True)
+    poster = models.ImageField(
+        'Movie Poster',
+        upload_to='uploads/%Y/%m/%d/',
+        blank=True,
+    )
 
     class Meta:
         verbose_name = 'Movie'

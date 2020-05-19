@@ -4,23 +4,25 @@ from django.urls import reverse
 from django.test import Client
 
 
-@pytest.fixture()
-def superuser():
-    superuser = get_user_model().objects.create_superuser(
-        'admin@gmail.com',
-        'password',
-    )
-    return superuser
+@pytest.fixture(scope='module')
+def superuser(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        superuser = get_user_model().objects.create_superuser(
+            'admin@gmail.com',
+            'password',
+        )
+        yield superuser
 
 
-@pytest.fixture()
-def user():
-    user = get_user_model().objects.create_user(
-        email='user@gmail.com',
-        password='password',
-        name='User',
-    )
-    return user
+@pytest.fixture(scope='module')
+def user(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        user = get_user_model().objects.create_user(
+            email='user@gmail.com',
+            password='password',
+            name='User',
+        )
+        yield user
 
 
 @pytest.mark.django_db

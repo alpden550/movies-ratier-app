@@ -14,7 +14,6 @@ def test_create_user_successful():
         password=password,
     )
 
-    assert get_user_model().objects.count() == 1
     assert user.email == email
     assert user.check_password(password)
 

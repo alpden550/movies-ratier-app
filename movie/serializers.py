@@ -38,3 +38,12 @@ class MovieImageSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('id', 'poster')
         read_only_fields = ('id',)
+
+
+class MovieRatingSerializer(serializers.ModelSerializer):
+    """Serializer for rating a movie."""
+
+    class Meta:
+        model = Rating
+        fields = ('id', 'stars')
+        read_only_fields = ('id',)

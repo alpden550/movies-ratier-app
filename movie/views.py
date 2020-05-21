@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from api.models import Movie, Rating
 from movie.serializers import (MovieDetailSerializer, MovieImageSerializer,
-                               MovieSerializer, RatingSerializer)
+                               MovieSerializer, RatingSerializer, MovieRatingSerializer)
 
 
 class MovieViewSet(viewsets.ModelViewSet):
@@ -19,6 +19,8 @@ class MovieViewSet(viewsets.ModelViewSet):
             return MovieDetailSerializer
         elif self.action == 'upload_image':
             return MovieImageSerializer
+        elif self.action == 'rate_movie':
+            return MovieRatingSerializer
 
         return self.serializer_class
 
@@ -37,6 +39,29 @@ class MovieViewSet(viewsets.ModelViewSet):
                 serializer.data,
                 status=status.HTTP_200_OK,
             )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    @action(methods=['POST'], detail=True, url_path='rate-movie')
+    def rate_movie(self, request, pk=None):
+        """Rate a movie."""
+        movie = self.get_object()
+        user = request.user
+        rating = Rating.objects.get(movie=movie.id, user=user.id)
+
+        serializer = self.get_serializer(
+            rating,
+            data=request.data,
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK,
+            )
+
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST,

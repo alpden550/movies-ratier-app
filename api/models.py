@@ -3,6 +3,7 @@ from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Avg
 
 
 class UserManager(BaseUserManager):
@@ -61,6 +62,10 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+
+    def average_rating(self):
+        """Calculate average rating for a movie."""
+        return Movie.objects.filter(id=self.id).aggregate(average_rating=Avg('ratings__stars'))
 
 
 class Rating(models.Model):

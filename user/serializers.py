@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 
 
@@ -12,7 +12,7 @@ class AuthTokenSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        """Validate and authenticatr a user with email."""
+        """Validate and authenticate a user with email."""
         email = attrs.get('email')
         password = attrs.get('password')
         user = authenticate(
@@ -27,3 +27,16 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer for the user object."""
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'password', 'name')
+        extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
+
+    def create(self, validated_data):
+        """Create user with email and return it."""
+        return get_user_model().objects.create_user(**validated_data)

@@ -65,7 +65,9 @@ class Movie(models.Model):
 
     def average_rating(self):
         """Calculate average rating for a movie."""
-        return Movie.objects.filter(id=self.id).aggregate(average_rating=Avg('ratings__stars'))
+        return Movie.objects.filter(
+            id=self.id,
+        ).aggregate(average_rating=Avg('ratings__stars'))['average_rating']
 
 
 class Rating(models.Model):

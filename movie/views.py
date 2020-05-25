@@ -1,10 +1,12 @@
 from rest_framework import status, viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.models import Movie, Rating
 from movie.serializers import (MovieDetailSerializer, MovieImageSerializer,
-                               MovieSerializer, RatingSerializer, MovieRatingSerializer)
+                               MovieRatingSerializer, MovieSerializer,
+                               RatingSerializer)
 
 
 class MovieViewSet(viewsets.ModelViewSet):
@@ -12,6 +14,7 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    authentication_classes = (TokenAuthentication, )
 
     def get_serializer_class(self):
         """Retrieve appropriate serializer class."""

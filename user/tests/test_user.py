@@ -102,3 +102,35 @@ class TestPublicUserApi:
         response = client.get(USER_URL)
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestPrivateUserApi:
+    """Test user api that required authentication."""
+
+    @pytest.mark.django_db
+    def test_retrieve_user_successful(self, client: APIClient, user):
+        client.force_authenticate(user)
+        response = client.get(USER_URL)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'email': 'test@gmail.com', 'name': 'Name'}
+
+    @pytest.mark.django_db
+    def test_method_post_not_allowed(self, client: APIClient, user):
+        """Test that POST method is not allowed in the profile."""
+        client.force_authenticate(user)
+        response = client.post(USER_URL, data={})
+
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+
+    @pytest.mark.django_db
+    def test_updating_user_profile(self, client: APIClient, user):
+        """Test that an authenticated user can update profile."""
+        client.force_authenticate(user)
+        payload = {'name': 'New Full Name', 'password': 'new_password'}
+        response = client.patch(USER_URL, payload)
+
+        user.refresh_from_db()
+        assert response.status_code == status.HTTP_200_OK
+        assert user.name == payload['name']
+        assert user.check_password(payload['password'])

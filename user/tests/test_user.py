@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
+USER_URL = reverse('user:update')
 
 
 @pytest.fixture
@@ -68,3 +69,36 @@ class TestPublicUserApi:
 
         assert 'token' in response.data
         assert response.status_code == status.HTTP_200_OK
+
+    @pytest.mark.django_db
+    def test_create_token_invalid_credentials(self, client: APIClient, user):
+        """Test that token isn't created if invalid credentials given."""
+        payload = {'email': 'test@gmail.com', 'password': 'wrong'}
+        response = client.post(TOKEN_URL, payload)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert 'token' not in response.data
+
+    @pytest.mark.django_db
+    def test_create_token_without_user(self, client: APIClient):
+        """Test that token isn't created if user doesn't exist."""
+        payload = {'email': 'test@test.com', 'password': 'password'}
+        response = client.post(TOKEN_URL, payload)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert 'token' not in response.data
+
+    @pytest.mark.django_db
+    def test_create_token_with_missed_fields(self, client: APIClient):
+        """Test that email and password are required."""
+        payload = {'email': 'email', 'password': ''}
+        response = client.post(TOKEN_URL, payload)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert 'token' not in response.data
+
+    def test_retrieve_user_unathorized(self, client: APIClient):
+        """Test that authentication is required to change user info."""
+        response = client.get(USER_URL)
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
